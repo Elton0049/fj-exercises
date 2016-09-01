@@ -6,6 +6,8 @@
 package com.example.hwan.myapplication.rx;
 
 import com.example.hwan.myapplication.BuildConfig;
+import com.example.hwan.myapplication.util.logging.LogFactory;
+import com.example.hwan.myapplication.util.logging.Logger;
 
 import rx.Subscriber;
 import rx.functions.Action1;
@@ -18,10 +20,18 @@ public class SubscriberBuilder<T> {
     private boolean isBuilt = false;
 
     boolean isThrowNPE = false;
-    boolean isWarnNPE = true;
     Action1<Void> onCompletedAction;
     Action1<Throwable> onErrorAction;
     Action1<T> onNextAction;
+    private final StackTraceElement callerTrace;
+
+    public SubscriberBuilder() {
+        if (BuildConfig.DEBUG) {
+            callerTrace = Thread.currentThread().getStackTrace()[3];
+        } else {
+            callerTrace = null;
+        }
+    }
 
     public SubscriberBuilder<T> onCompleted(Action1<Void> onCompletedAction) {
         assertNotBuilt();
@@ -38,11 +48,6 @@ public class SubscriberBuilder<T> {
     public SubscriberBuilder<T> onNext(Action1<T> onNextAction) {
         assertNotBuilt();
         this.onNextAction = onNextAction;
-        return this;
-    }
-
-    public SubscriberBuilder<T> warnNullAction(boolean flag) {
-        this.isWarnNPE = flag;
         return this;
     }
 
@@ -92,11 +97,14 @@ public class SubscriberBuilder<T> {
                 String msg = String.format("%s implementation required but no action was assigned via %s#%s().",
                         methodName, SubscriberBuilder.class.getSimpleName(), methodName);
 
+                if (BuildConfig.DEBUG) {
+                    Logger log = LogFactory.getLogger(SubscriberBuilder.class.getSimpleName());
+                    log.w(msg);
+                    log.w(String.format("Call stack: %s", callerTrace));
+                }
+
                 if (isThrowNPE) {
                     throw new NullPointerException(msg);
-                }
-                if (isWarnNPE && BuildConfig.DEBUG) {
-                    System.err.println(msg);
                 }
             }
         };

@@ -3,12 +3,14 @@
  *
  * Distributed under no licences and no warranty.
  */
-package com.example.hwan.myapplication;
+package com.example.hwan.myapplication.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.example.hwan.myapplication.MyActivity;
+import com.example.hwan.myapplication.MyApplication;
+import com.example.hwan.myapplication.R;
 import com.example.hwan.myapplication.api.ApiService;
 import com.example.hwan.myapplication.dto.CounterDto;
 import com.example.hwan.myapplication.rx.SubscriberBuilder;
@@ -18,17 +20,13 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import rx.Subscriber;
 import rx.functions.Action1;
 
 /**
  * @author Francesco Jo(nimbusob@gmail.com)
  * @since 22 - Aug - 2016
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends MyActivity {
     @Inject
     public ApiService apiService;
     @BindView(R.id.textView)
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         textView.setText(R.string.hello);
         apiService.getCounter()
+                .takeUntil(getObservableLifecycle(LifeCycle.ON_DESTROY))
                 .subscribe(new SubscriberBuilder<CounterDto>()
                         .onNext(new Action1<CounterDto>() {
                             @Override
@@ -56,14 +55,14 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .onError(new Action1<Throwable>() {
                             @Override
-                            public void call(Throwable t) {
+                            public void call(Throwable ex) {
                                 System.out.println("onError");
-                                t.printStackTrace();
+                                ex.printStackTrace();
                             }
                         })
                         .onCompleted(new Action1<Void>() {
                             @Override
-                            public void call(Void aVoid) {
+                            public void call(Void nothing) {
                                 System.out.println("onCompleted");
                             }
                         }).build()

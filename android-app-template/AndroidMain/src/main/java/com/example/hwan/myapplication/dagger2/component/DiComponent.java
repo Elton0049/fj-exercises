@@ -5,7 +5,7 @@
  */
 package com.example.hwan.myapplication.dagger2.component;
 
-import com.example.hwan.myapplication.MainActivity;
+import com.example.hwan.myapplication.activity.MainActivity;
 import com.example.hwan.myapplication.dagger2.module.NetworkApiModule;
 
 import javax.inject.Singleton;
