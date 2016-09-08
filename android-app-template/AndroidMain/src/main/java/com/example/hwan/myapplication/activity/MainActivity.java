@@ -13,13 +13,13 @@ import com.example.hwan.myapplication.MyApplication;
 import com.example.hwan.myapplication.R;
 import com.example.hwan.myapplication.api.ApiService;
 import com.example.hwan.myapplication.dto.CounterDto;
-import com.example.hwan.myapplication.rx.SubscriberBuilder;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -44,29 +44,25 @@ public class MainActivity extends MyActivity {
         textView.setText(R.string.hello);
         apiService.getCounter()
                 .takeUntil(getObservableLifecycle(LifeCycle.ON_DESTROY))
-                .subscribe(new SubscriberBuilder<CounterDto>()
-                        .onNext(new Action1<CounterDto>() {
-                            @Override
-                            public void call(CounterDto counterDto) {
-                                System.out.println("onNext");
-                                System.out.println("Counter   : " + counterDto.getCounter());
-                                System.out.println("LastAccess: " + counterDto.getLastAccessed());
-                            }
-                        })
-                        .onError(new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable ex) {
-                                System.out.println("onError");
-                                ex.printStackTrace();
-                            }
-                        })
-                        .onCompleted(new Action1<Void>() {
-                            @Override
-                            public void call(Void nothing) {
-                                System.out.println("onCompleted");
-                            }
-                        }).build()
-                );
+                .subscribe(new Action1<CounterDto>() {
+                    @Override
+                    public void call(CounterDto counterDto) {
+                        System.out.println("onNext");
+                        System.out.println("Counter   : " + counterDto.getCounter());
+                        System.out.println("LastAccess: " + counterDto.getLastAccessed());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable exception) {
+                        System.out.println("onError");
+                        exception.printStackTrace();
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        System.out.println("onCompleted");
+                    }
+                });
     }
 
     @Override
