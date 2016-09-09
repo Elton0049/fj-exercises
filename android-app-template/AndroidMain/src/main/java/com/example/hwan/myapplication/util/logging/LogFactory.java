@@ -21,7 +21,7 @@ public class LogFactory {
     public static final Transformer<String, Logger> DEFAULT_ANDROID_LOGGER = new Transformer<String, Logger>() {
         @Override
         public Logger transform(String input) {
-            return new AndroidLogger(input);
+            return new AndroidLoggerForDebug(input);
         }
     };
 

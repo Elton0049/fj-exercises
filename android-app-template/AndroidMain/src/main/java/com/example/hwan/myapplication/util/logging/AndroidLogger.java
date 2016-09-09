@@ -14,7 +14,7 @@ import com.example.hwan.myapplication.util.ArrayUtils;
  * @since 01 - Sep - 2016
  */
 class AndroidLogger implements Logger {
-    private static final String NULL = "null";
+    protected static final String NULL = "null";
     private final String tagName;
 
     AndroidLogger(String tagName) {
