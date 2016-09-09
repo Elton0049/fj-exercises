@@ -32,8 +32,16 @@ android {
             applicationIdSuffix ".debug"
         }
 
+        beta {
+            debuggable true
+            versionNameSuffix " (BETA)"
+            minifyEnabled true
+            applicationIdSuffix ".beta"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
