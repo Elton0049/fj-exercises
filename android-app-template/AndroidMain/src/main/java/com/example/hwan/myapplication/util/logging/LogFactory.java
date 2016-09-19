@@ -6,12 +6,11 @@
 package com.example.hwan.myapplication.util.logging;
 
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.LruCache;
 
 import com.example.hwan.myapplication.util.Transformer;
 
 import java.lang.ref.SoftReference;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Francesco Jo(nimbusob@gmail.com)
@@ -20,26 +19,34 @@ import java.util.concurrent.ConcurrentMap;
 public class LogFactory {
     public static final Transformer<String, Logger> DEFAULT_ANDROID_LOGGER = new Transformer<String, Logger>() {
         @Override
-        public Logger transform(String input) {
-            return new AndroidLoggerForDebug(input);
+        public Logger transform(String loggerName) {
+            return new AndroidLoggerForDebug(loggerName);
         }
     };
 
-    private static final ConcurrentMap<String, SoftReference<Logger>> LOGGERS
-            = new ConcurrentHashMap<>();
+    private static final int MAXIMUM_LOGGERS_SIZE = 20;
+
+    private static final LruCache<String, SoftReference<Logger>> LOGGERS
+            = new LruCache<>(MAXIMUM_LOGGERS_SIZE);
     private static Transformer<String, Logger> instanceFactory = DEFAULT_ANDROID_LOGGER;
 
     public static Logger getLogger(String tagName) {
-        if (LOGGERS.get(tagName) == null) {
-            return newLogger(tagName);
-        } else {
-            SoftReference<Logger> ref = LOGGERS.get(tagName);
-            Logger l = ref.get();
-            if (l != null) {
-                return l;
-            } else {
+        synchronized (LOGGERS) {
+            if (LOGGERS.get(tagName) == null) {
                 return newLogger(tagName);
             }
+        }
+
+        SoftReference<Logger> ref;
+        synchronized (LOGGERS) {
+            ref = LOGGERS.get(tagName);
+        }
+
+        Logger l = ref.get();
+        if (l != null) {
+            return l;
+        } else {
+            return newLogger(tagName);
         }
     }
 
@@ -64,7 +71,10 @@ public class LogFactory {
             throw new RuntimeException("Exception occured in given instanceFactory: " + instanceFactory, e);
         }
 
-        LOGGERS.put(tagName, new SoftReference<>(log));
+        synchronized (LOGGERS) {
+            LOGGERS.put(tagName, new SoftReference<>(log));
+        }
+
         return log;
     }
 }

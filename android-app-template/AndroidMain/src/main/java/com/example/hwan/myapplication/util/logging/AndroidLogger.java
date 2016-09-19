@@ -10,6 +10,9 @@ import android.util.Log;
 import com.example.hwan.myapplication.util.ArrayUtils;
 
 /**
+ * Android logger. For adjusting logging level,
+ * see <a href="https://developer.android.com/reference/android/util/Log.html#isLoggable(java.lang.String, int)">Adjusting loglevel</a> documentation.
+ *
  * @author Francesco Jo(nimbusob@gmail.com)
  * @since 01 - Sep - 2016
  */
