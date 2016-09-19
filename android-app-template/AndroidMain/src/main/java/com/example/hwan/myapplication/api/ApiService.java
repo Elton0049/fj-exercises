@@ -7,7 +7,6 @@ package com.example.hwan.myapplication.api;
 
 import com.example.hwan.myapplication.dto.CounterDto;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import rx.Observable;
 
