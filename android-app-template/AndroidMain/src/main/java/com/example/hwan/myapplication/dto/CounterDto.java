@@ -10,8 +10,12 @@ package com.example.hwan.myapplication.dto;
  * @since 22 - Aug - 2016
  */
 public class CounterDto {
+    // This field is used by Retrofit2
+    @SuppressWarnings("unused")
     private int counter;
 
+    // This field is used by Retrofit2
+    @SuppressWarnings("unused")
     private String lastAccessed;
 
     public int getCounter() {
