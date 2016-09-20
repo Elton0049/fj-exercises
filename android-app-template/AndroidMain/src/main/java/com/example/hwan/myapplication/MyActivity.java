@@ -23,6 +23,7 @@ import rx.subjects.BehaviorSubject;
  * @author Francesco Jo(nimbusob@gmail.com)
  * @since 01 - Sep - 2016
  */
+@SuppressLint("Registered") // This file is working as 'base' activity.
 public class MyActivity extends AppCompatActivity {
     @IntDef({
         LifeCycle.BEFORE_ON_CREATE,
@@ -107,7 +108,7 @@ public class MyActivity extends AppCompatActivity {
         logLifecycle(String.format("onActivityResult: data %s", data));
     }
 
-    public Observable<Integer> getObservableLifecycle(final @LifeCycle int lifecycle) {
+    protected Observable<Integer> getObservableLifecycle(final @LifeCycle int lifecycle) {
         return getObservableLifecycleInternal().filter(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer l) {

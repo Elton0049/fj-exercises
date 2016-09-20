@@ -17,6 +17,7 @@ import com.example.hwan.myapplication.util.ArrayUtils;
  * @since 01 - Sep - 2016
  */
 class AndroidLogger implements Logger {
+    @SuppressWarnings("WeakerAccess")   // Accessed by subclasses
     protected static final String NULL = "null";
     private final String tagName;
 

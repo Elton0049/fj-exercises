@@ -9,6 +9,7 @@ package com.example.hwan.myapplication.util.logging;
  * @author Francesco Jo(nimbusob@gmail.com)
  * @since 01 - Sep - 2016
  */
+@SuppressWarnings("unused")
 public interface Logger {
     void v(String format, Object... args);
 

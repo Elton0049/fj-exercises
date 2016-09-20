@@ -17,7 +17,8 @@ import java.lang.ref.SoftReference;
  * @since 01 - Sep - 2016
  */
 public class LogFactory {
-    public static final Transformer<String, Logger> DEFAULT_ANDROID_LOGGER = new Transformer<String, Logger>() {
+    @VisibleForTesting @SuppressWarnings("WeakerAccess")
+    /*default*/ static final Transformer<String, Logger> DEFAULT_ANDROID_LOGGER = new Transformer<String, Logger>() {
         @Override
         public Logger transform(String loggerName) {
             return new AndroidLoggerForDebug(loggerName);
