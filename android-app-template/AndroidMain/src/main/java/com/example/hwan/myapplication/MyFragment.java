@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +20,7 @@ import com.example.hwan.myapplication.util.logging.LogFactory;
 import com.example.hwan.myapplication.util.logging.Logger;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
 /**
@@ -28,18 +29,18 @@ import rx.subjects.BehaviorSubject;
  */
 public class MyFragment extends Fragment {
     @IntDef({
-        LifeCycle.BEFORE_ON_ATTACH,
-        LifeCycle.ON_ATTACH,
-        LifeCycle.ON_CREATE,
-        LifeCycle.ON_CREATE_VIEW,
-        LifeCycle.ON_ACTIVITY_CREATED,
-        LifeCycle.ON_START,
-        LifeCycle.ON_RESUME,
-        LifeCycle.ON_PAUSE,
-        LifeCycle.ON_STOP,
-        LifeCycle.ON_DESTROY_VIEW,
-        LifeCycle.ON_DESTROY,
-        LifeCycle.ON_DETACH
+            LifeCycle.BEFORE_ON_ATTACH,
+            LifeCycle.ON_ATTACH,
+            LifeCycle.ON_CREATE,
+            LifeCycle.ON_CREATE_VIEW,
+            LifeCycle.ON_ACTIVITY_CREATED,
+            LifeCycle.ON_START,
+            LifeCycle.ON_RESUME,
+            LifeCycle.ON_PAUSE,
+            LifeCycle.ON_STOP,
+            LifeCycle.ON_DESTROY_VIEW,
+            LifeCycle.ON_DESTROY,
+            LifeCycle.ON_DETACH
     })
     public @interface LifeCycle {
         int BEFORE_ON_ATTACH    = 0;
@@ -139,6 +140,26 @@ public class MyFragment extends Fragment {
         setCurrentLifecycle(LifeCycle.ON_DETACH);
     }
 
+    /**
+     * This method will be convenient when managing lifecycle of
+     * <a href="http://reactivex.io/documentation/observable.html">Observable</a> subscription using
+     * <a href="http://reactivex.io/documentation/operators/takeuntil.html">takeUntil</a> operator.
+     * <p>
+     * Using <code>takeUntil(Lifecycle)</code> idiom will help us to forget to calling <code>Observable#unsubscribe</code>
+     * to avoid memory leak on fragment when subscribed <code>Observable</code> lives longer than fragment.
+     * </p>
+     *
+     * @return An observable of fragment lifecycle state.
+     */
+    protected Observable<Integer> getObservableLifecycle(final @LifeCycle int lifecycle) {
+        return getObservableLifecycleInternal().filter(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer l) {
+                return l >= lifecycle;
+            }
+        }).take(1);
+    }
+
     // Suppress SwitchIntDef: All cases are covered in 'default' clause
     @SuppressLint("SwitchIntDef")
     private Observable<Integer> getObservableLifecycleInternal() {
@@ -160,11 +181,6 @@ public class MyFragment extends Fragment {
         currentLifecycle = lifecycle;
         if (null != lifecycleSubject) {
             lifecycleSubject.onNext(lifecycle);
-            /*
-             * For avoiding every unsubscription on Fragments which uses Observables since the object lifecycle of
-             * Observable and Fragment is different, thus not unsubscribed Observable after onDestroy in Fragment
-             * will cause memory leak
-             */
             if (lifecycle == LifeCycle.ON_DESTROY) {
                 lifecycleSubject.onCompleted();
                 lifecycleSubject = null;

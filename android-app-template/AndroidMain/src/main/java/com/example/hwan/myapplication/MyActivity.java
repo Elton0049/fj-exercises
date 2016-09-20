@@ -6,11 +6,11 @@
 package com.example.hwan.myapplication;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.example.hwan.myapplication.util.logging.LogFactory;
 import com.example.hwan.myapplication.util.logging.Logger;
@@ -24,15 +24,15 @@ import rx.subjects.BehaviorSubject;
  * @since 01 - Sep - 2016
  */
 @SuppressLint("Registered") // This file is working as 'base' activity.
-public class MyActivity extends AppCompatActivity {
+public class MyActivity extends Activity {
     @IntDef({
-        LifeCycle.BEFORE_ON_CREATE,
-        LifeCycle.ON_CREATE,
-        LifeCycle.ON_START,
-        LifeCycle.ON_RESUME,
-        LifeCycle.ON_PAUSE,
-        LifeCycle.ON_STOP,
-        LifeCycle.ON_DESTROY,
+            LifeCycle.BEFORE_ON_CREATE,
+            LifeCycle.ON_CREATE,
+            LifeCycle.ON_START,
+            LifeCycle.ON_RESUME,
+            LifeCycle.ON_PAUSE,
+            LifeCycle.ON_STOP,
+            LifeCycle.ON_DESTROY,
     })
     public @interface LifeCycle {
         int BEFORE_ON_CREATE = 0;
@@ -108,6 +108,17 @@ public class MyActivity extends AppCompatActivity {
         logLifecycle(String.format("onActivityResult: data %s", data));
     }
 
+    /**
+     * This method will be convenient when managing lifecycle of
+     * <a href="http://reactivex.io/documentation/observable.html">Observable</a> subscription using
+     * <a href="http://reactivex.io/documentation/operators/takeuntil.html">takeUntil</a> operator.
+     * <p>
+     * Using <code>takeUntil(Lifecycle)</code> idiom will help us to forget to calling <code>Observable#unsubscribe</code>
+     * to avoid memory leak on activity when subscribed <code>Observable</code> lives longer than activity.
+     * </p>
+     *
+     * @return An observable of activity lifecycle state.
+     */
     protected Observable<Integer> getObservableLifecycle(final @LifeCycle int lifecycle) {
         return getObservableLifecycleInternal().filter(new Func1<Integer, Boolean>() {
             @Override
@@ -138,11 +149,6 @@ public class MyActivity extends AppCompatActivity {
         currentLifecycle = lifecycle;
         if (null != lifecycleSubject) {
             lifecycleSubject.onNext(lifecycle);
-            /*
-             * For avoiding every unsubscription on Activities which uses Observables since the object lifecycle of
-             * Observable and Activity is different, thus not unsubscribed Observable after onDestroy in Activity
-             * will cause memory leak
-             */
             if (lifecycle == LifeCycle.ON_DESTROY) {
                 lifecycleSubject.onCompleted();
                 lifecycleSubject = null;

@@ -3,7 +3,9 @@
  *
  * Distributed under no licences and no warranty.
  */
-package com.example.hwan.myapplication;
+package com.example.hwan.myapplication._base;
+
+import com.example.hwan.myapplication.BuildConfig;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;

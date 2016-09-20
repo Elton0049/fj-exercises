@@ -52,8 +52,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // Android essentials
     compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
+    // For using FragmentPagerAdapter which requires android.app.Fragment rather than android.support.v4.app.
+    compile 'com.android.support:support-v13:24.2.1'
 
     // 3rd party
     compile 'io.reactivex:rxjava:1.2.0'

@@ -19,8 +19,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Francesco Jo(nimbusob@gmail.com)
@@ -43,6 +45,8 @@ public class MainActivity extends MyActivity {
 
         textView.setText(R.string.hello);
         apiService.getCounter()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .takeUntil(getObservableLifecycle(LifeCycle.ON_DESTROY))
                 .subscribe(new Action1<CounterDto>() {
                     @Override

@@ -3,7 +3,10 @@
  *
  * Distributed under no licences and no warranty.
  */
-package com.example.hwan.myapplication;
+package com.example.hwan.myapplication._base;
+
+import com.example.hwan.myapplication.BuildConfig;
+import com.example.hwan.myapplication.MyApplication;
 
 import org.junit.Before;
 import org.junit.Ignore;

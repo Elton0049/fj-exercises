@@ -3,7 +3,7 @@
  *
  * Distributed under no licences and no warranty.
  */
-package com.example.hwan.myapplication;
+package com.example.hwan.myapplication._base;
 
 import org.junit.Ignore;
 
