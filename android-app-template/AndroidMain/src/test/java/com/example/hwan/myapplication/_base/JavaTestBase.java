@@ -20,11 +20,11 @@ import static org.junit.Assert.fail;
  */
 @Ignore("Test base class on Java logic only")
 public class JavaTestBase {
-    public static void assertEmpty(Collection<?> collection) {
+    protected static void assertEmpty(Collection<?> collection) {
         assertEmpty("", collection);
     }
 
-    public static void assertEmpty(final String msg, Collection<?> collection) {
+    protected static void assertEmpty(final String msg, Collection<?> collection) {
         if (null != collection && collection.size() > 0) {
             String m = msg == null ? "" : msg;
 
@@ -32,11 +32,11 @@ public class JavaTestBase {
         }
     }
 
-    public static void assertListEquals(List<?> expected, List<?> actual) {
+    protected static void assertListEquals(List<?> expected, List<?> actual) {
         assertListEquals("", expected, actual);
     }
 
-    public static void assertListEquals(String msg, List<?> expected, List<?> actual) {
+    protected static void assertListEquals(String msg, List<?> expected, List<?> actual) {
         if (null == expected && null == actual) {
             return;
         }

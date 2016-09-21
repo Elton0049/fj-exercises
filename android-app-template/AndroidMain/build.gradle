@@ -27,21 +27,34 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
+        // Developer/Lab testing version. Device is connected to PC in most cases
         debug {
             versionNameSuffix " (DEBUG)"
-            minifyEnabled false
             applicationIdSuffix ".debug"
+            debuggable true
+            minifyEnabled false
         }
 
-        beta {
+        // Inhouse unstable version. Usually used for bugbashing, early field tests, etc.
+        alpha {
+            versionNameSuffix " (ALPHA)"
+            applicationIdSuffix ".alpha"
             debuggable true
+            minifyEnabled false
+        }
+
+        // Public unstable version. Used as release candidates.
+        beta {
             versionNameSuffix " (BETA)"
-            minifyEnabled true
             applicationIdSuffix ".beta"
+            debuggable false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
+        // Public stable version.
         release {
+            debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

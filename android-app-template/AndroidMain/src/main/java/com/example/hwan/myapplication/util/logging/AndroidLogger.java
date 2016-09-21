@@ -5,9 +5,13 @@
  */
 package com.example.hwan.myapplication.util.logging;
 
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.hwan.myapplication.util.ArrayUtils;
+
+import java.util.Arrays;
 
 /**
  * Android logger. For adjusting logging level,
@@ -26,7 +30,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void v(String format, Object... args) {
+    public void v(@NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.VERBOSE)) {
             String logMsg = formatString(format, args);
             Log.v(tagName, logMsg);
@@ -34,7 +38,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void v(Throwable t, String format, Object... args) {
+    public void v(Throwable t, @NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.VERBOSE)) {
             String logMsg = formatString(format, args);
             Log.v(tagName, logMsg, t);
@@ -50,7 +54,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void d(String format, Object... args) {
+    public void d(@NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.DEBUG)) {
             String logMsg = formatString(format, args);
             Log.d(tagName, logMsg);
@@ -58,7 +62,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void d(Throwable t, String format, Object... args) {
+    public void d(Throwable t, @NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.DEBUG)) {
             String logMsg = formatString(format, args, t);
             Log.d(tagName, logMsg);
@@ -74,7 +78,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void i(String format, Object... args) {
+    public void i(@NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.INFO)) {
             String logMsg = formatString(format, args);
             Log.i(tagName, logMsg);
@@ -82,7 +86,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void i(Throwable t, String format, Object... args) {
+    public void i(Throwable t, @NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.INFO)) {
             String logMsg = formatString(format, args, t);
             Log.i(tagName, logMsg);
@@ -98,7 +102,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void w(String format, Object... args) {
+    public void w(@NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.WARN)) {
             String logMsg = formatString(format, args);
             Log.w(tagName, logMsg);
@@ -106,7 +110,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void w(Throwable t, String format, Object... args) {
+    public void w(Throwable t, @NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.WARN)) {
             String logMsg = formatString(format, args, t);
             Log.w(tagName, logMsg);
@@ -122,7 +126,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void e(String format, Object... args) {
+    public void e(@NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.ERROR)) {
             String logMsg = formatString(format, args);
             Log.e(tagName, logMsg);
@@ -130,7 +134,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void e(Throwable t, String format, Object... args) {
+    public void e(Throwable t, @NonNull String format, Object... args) {
         if (Log.isLoggable(tagName, Log.ERROR)) {
             String logMsg = formatString(format, args, t);
             Log.e(tagName, logMsg);
@@ -146,7 +150,7 @@ class AndroidLogger implements Logger {
     }
 
     @Override
-    public void log(int priority, String message, Throwable t) {
+    public void log(int priority, @NonNull String message, Throwable t) {
         if (Log.isLoggable(tagName, priority)) {
             switch(priority) {
                 case Log.VERBOSE:
@@ -175,6 +179,10 @@ class AndroidLogger implements Logger {
     }
 
     private static String formatString(String format, Object... args) {
+        if (TextUtils.isEmpty(format)) {
+            return NULL + ": " + Arrays.toString(args);
+        }
+
         if (ArrayUtils.isEmpty(args)) {
             return format;
         } else {

@@ -5,12 +5,14 @@
  */
 package com.example.hwan.myapplication.util.logging;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LruCache;
-
-import com.example.hwan.myapplication.util.Transformer;
+import android.text.TextUtils;
 
 import java.lang.ref.SoftReference;
+
+import rx.functions.Func1;
 
 /**
  * @author Francesco Jo(nimbusob@gmail.com)
@@ -18,20 +20,25 @@ import java.lang.ref.SoftReference;
  */
 public class LogFactory {
     @VisibleForTesting @SuppressWarnings("WeakerAccess")
-    /*default*/ static final Transformer<String, Logger> DEFAULT_ANDROID_LOGGER = new Transformer<String, Logger>() {
+    /*default*/ static final Func1<String, Logger> DEFAULT_ANDROID_LOGGER = new Func1<String, Logger>() {
         @Override
-        public Logger transform(String loggerName) {
+        public Logger call(String loggerName) {
             return new AndroidLoggerForDebug(loggerName);
         }
     };
 
     private static final int MAXIMUM_LOGGERS_SIZE = 20;
 
-    private static final LruCache<String, SoftReference<Logger>> LOGGERS
+    @VisibleForTesting @SuppressWarnings("WeakerAccess")
+    /*default*/ static final LruCache<String, SoftReference<Logger>> LOGGERS
             = new LruCache<>(MAXIMUM_LOGGERS_SIZE);
-    private static Transformer<String, Logger> instanceFactory = DEFAULT_ANDROID_LOGGER;
+    private static Func1<String, Logger> instanceFactory = DEFAULT_ANDROID_LOGGER;
 
     public static Logger getLogger(String tagName) {
+        if (TextUtils.isEmpty(tagName)) {
+            throw new IllegalArgumentException("Tag name must not be empty");
+        }
+
         synchronized (LOGGERS) {
             if (LOGGERS.get(tagName) == null) {
                 return newLogger(tagName);
@@ -51,27 +58,18 @@ public class LogFactory {
         }
     }
 
-    @VisibleForTesting
-    public static Transformer<String, Logger> getInstanceFactory() {
+    @VisibleForTesting @SuppressWarnings("WeakerAccess")
+    /*default*/ static Func1<String, Logger> getLoggerFactory() {
         return LogFactory.instanceFactory;
     }
 
-    @VisibleForTesting
-    public static void setLoggerFactory(Transformer<String, Logger> loggerInstanceFactory) {
-        if (null == loggerInstanceFactory) {
-            throw new IllegalArgumentException("InstanceFactory must not be null");
-        }
+    @VisibleForTesting @SuppressWarnings("WeakerAccess")
+    /*default*/ static void setLoggerFactory(@NonNull Func1<String, Logger> loggerInstanceFactory) {
         LogFactory.instanceFactory = loggerInstanceFactory;
     }
 
     private static Logger newLogger(String tagName) {
-        Logger log;
-        try {
-            log = instanceFactory.transform(tagName);
-        } catch (Exception e) {
-            throw new RuntimeException("Exception occured in given instanceFactory: " + instanceFactory, e);
-        }
-
+        Logger log = instanceFactory.call(tagName);
         synchronized (LOGGERS) {
             LOGGERS.put(tagName, new SoftReference<>(log));
         }
