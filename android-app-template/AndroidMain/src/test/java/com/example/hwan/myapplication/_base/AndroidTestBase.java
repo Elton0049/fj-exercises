@@ -5,6 +5,8 @@
  */
 package com.example.hwan.myapplication._base;
 
+import android.support.annotation.CallSuper;
+
 import com.example.hwan.myapplication.BuildConfig;
 import com.example.hwan.myapplication.MyApplication;
 
@@ -28,6 +30,7 @@ import org.robolectric.annotation.Config;
 public class AndroidTestBase extends JavaTestBase {
     private MyApplication application;
 
+    @CallSuper
     @Before
     public void setUp() throws Exception {
         this.application = (MyApplication) RuntimeEnvironment.application;
